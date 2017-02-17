@@ -1,5 +1,8 @@
 import sys
 import re
+import logging
+
+logging.basicConfig(filename='/var/log/barcode_scan.log', level=logging.INFO)
 
 hid = {4: 'a', 5: 'b', 6: 'c', 7: 'd', 8: 'e', 9: 'f', 10: 'g',
        11: 'h', 12: 'i', 13: 'j', 14: 'k', 15: 'l', 16: 'm', 17: 'n',
@@ -62,15 +65,13 @@ def decode(qr_data):
 	try:
 
 		p = re.match(r"(\d+)\^(.+)\^\^(.+)\^\^\^(.+)\^\^\^\^?", str(qr_data))
-		print p.group(1)
-		print p.group(2)
-		print p.group(3)
-		print p.group(4)
 		user_info = {'bagde': p.group(1), 'name': str(p.group(2)).replace('^', ' '), 'company': str(p.group(3)).replace('^', ' '), 'location': str(p.group(4)).replace('^', ' ')}
 		print 'user_info: {}'.format(user_info)
+		logging.info('user_info: {}'.format(user_info))
 
 	except Exception as e:
 		print 'Error: {}'.format(e)
+		logging.info('Error: {}'.format(e))
 		user_info = {'bagde': None, 'name': None, 'company': None, 'location': None}
 
 	return user_info
@@ -80,4 +81,6 @@ if __name__ == '__main__':
 		data = read_data_from_barcode()
 		print "data: {}\n".format(data)
 		print "======================="
+		logging.info("data: {}\n".format(data))
+		logging.info("=======================")
 		decode(data)
