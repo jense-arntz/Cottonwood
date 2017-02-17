@@ -64,15 +64,15 @@ def decode(qr_data):
 	"""
 	try:
 
-		p = re.match(r"(\d+)\^(.+)\^\^(.+)\^\^\^(.+)\^\^\^\^?", str(qr_data))
-		user_info = {'bagde': p.group(1), 'name': str(p.group(2)).replace('^', ' '), 'company': str(p.group(3)).replace('^', ' '), 'location': str(p.group(4)).replace('^', ' ')}
+		p = re.match(r"(\d+).+", str(qr_data))
+		user_info = {'bagde': p.group(1)}
 		print 'user_info: {}'.format(user_info)
 		logging.info('user_info: {}'.format(user_info))
 
 	except Exception as e:
 		print 'Error: {}'.format(e)
 		logging.info('Error: {}'.format(e))
-		user_info = {'bagde': None, 'name': None, 'company': None, 'location': None}
+		user_info = {'bagde': None}
 
 	return user_info
 
