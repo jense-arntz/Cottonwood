@@ -66,7 +66,7 @@ def decode(qr_data):
 		print p.group(2)
 		print p.group(3)
 		print p.group(4)
-		user_info = {'bagde': p.group(1), 'name': p.group(2), 'company': p.group(3), 'location': p.group(4)}
+		user_info = {'bagde': p.group(1), 'name': str(p.group(2)).replace('^', ' '), 'company': str(p.group(3)).replace('^', ' '), 'location': str(p.group(4)).replace('^', ' ')}
 		print 'user_info: {}'.format(user_info)
 
 	except Exception as e:
