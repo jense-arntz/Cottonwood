@@ -27,6 +27,7 @@ def read_data_from_barcode():
 	while not done:
 		buffer = fp.read(8)
 		print'buffer: {}\n'.format(buffer)
+		print'ord(buffer): {}\n'.format(ord(buffer))
 		for c in buffer:
 			if ord(c) > 0:
 				# 40 is carriage return which signifies
@@ -52,10 +53,12 @@ def read_data_from_barcode():
 					# if not a 2 then lookup the mapping
 					else:
 						ss += hid[int(ord(c))]
-			print'ss: {}'.format(ss)
+	print'ss: {}'.format(ss)
 	return ss
 
 if __name__ == '__main__':
 	while True:
 		data = read_data_from_barcode()
 		print "data: {}\n".format(data)
+		print "read done\n"
+		print "======================="
