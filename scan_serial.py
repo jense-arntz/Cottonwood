@@ -1,4 +1,5 @@
 import sys
+import re
 
 hid = {4: 'a', 5: 'b', 6: 'c', 7: 'd', 8: 'e', 9: 'f', 10: 'g',
        11: 'h', 12: 'i', 13: 'j', 14: 'k', 15: 'l', 16: 'm', 17: 'n',
@@ -13,7 +14,7 @@ hid2 = {4: 'A', 5: 'B', 6: 'C', 7: 'D', 8: 'E', 9: 'F', 10: 'G',
         18: 'O', 19: 'P', 20: 'Q', 21: 'R', 22: 'S', 23: 'T', 24: 'U',
         25: 'V', 26: 'W', 27: 'X', 28: 'Y', 29: 'Z', 30: '!', 31: '@',
         32: '#', 33: '$', 34: '%', 35: '^', 36: '&', 37: '*', 38: '(',
-        39: ')', 44: ' ', 45: '_', 46: '+', 47: '{', 48: '}', 49: '|',
+        39: ')', 44: ' ', 45: '_', 46:  '+', 47: '{', 48: '}', 49: '|',
         51: ':', 52: '"', 53: '~', 54: '<', 55: '>', 56: '?'}
 
 fp = open('/dev/hidraw0', 'rb')
@@ -26,8 +27,6 @@ def read_data_from_barcode():
 	ss = ""
 	while not done:
 		buffer = fp.read(8)
-		print'buffer: {}\n'.format(buffer)
-		print'ord(buffer): {}\n'.format(ord(buffer))
 		for c in buffer:
 			if ord(c) > 0:
 				# 40 is carriage return which signifies
@@ -53,12 +52,32 @@ def read_data_from_barcode():
 					# if not a 2 then lookup the mapping
 					else:
 						ss += hid[int(ord(c))]
-	print'ss: {}'.format(ss)
 	return ss
+
+
+def decode(qr_data):
+	"""
+	badge_info, name(first_last), company, location(city_state)
+	"""
+	try:
+
+		p = re.match(r"(\d+)\^(.+)\^\^(.+)\^\^\^(.+)\^\^\^\^?", str(qr_data))
+		print p.group(1)
+		print p.group(2)
+		print p.group(3)
+		print p.group(4)
+		user_info = {'bagde': p.group(1), 'name': p.group(2), 'company': p.group(3), 'location': p.group(4)}
+		print 'user_info: {}'.format(user_info)
+
+	except Exception as e:
+		print 'Error: {}'.format(e)
+		user_info = {'bagde': None, 'name': None, 'company': None, 'location': None}
+
+	return user_info
 
 if __name__ == '__main__':
 	while True:
 		data = read_data_from_barcode()
 		print "data: {}\n".format(data)
-		print "read done\n"
 		print "======================="
+		decode(data)
