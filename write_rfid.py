@@ -39,6 +39,7 @@ def Firmware():
 	try:
 		ser.write(bytearray(FIRMWARE_ID))
 		data = ser.read(1024)
+		print 'Firmware Data: {}'.format(data)
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
 
@@ -63,7 +64,7 @@ def Antenna_Power():
 		data = ser.read(1024)
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
-
+		print 'Antenna Power Data: {}'.format(data)
 		print 'RES_ID: {}\n'.format(RES_ID.encode('hex'))
 		print 'RES_len: {}\n'.format(RES_len)
 
@@ -86,7 +87,7 @@ def Inventory():
 		data = ser.read(1024)
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
-
+		print 'Inventory Data: {}'.format(data)
 		print 'RES_ID: {}\n'.format(RES_ID.encode('hex'))
 		print 'RES_len: {}\n'.format(RES_len)
 
