@@ -24,7 +24,7 @@ ser = None
 BUFF_SIZE = 1024
 
 
-while ser is not None:
+while ser is None:
 	try:
 		ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=0)
 	except Exception as e:
