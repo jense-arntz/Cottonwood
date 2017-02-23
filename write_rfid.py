@@ -121,9 +121,11 @@ def Select_Tag(EPC_len, EPC_ID):
 		print 'RES_len: {}\n'.format(RES_len)
 
 		if data[2].encode('hex') == 0x00:
+			print 'Found Tag\n'
 			return True  # Found the tag
 
 		if data[2].encode('hex') == 0x09:
+			print 'No Found Tag.\n'
 			return False  # Not Found
 
 		return False
@@ -169,10 +171,10 @@ def main():
 
 	EPC_len, EPC_ID = Inventory()
 
-	if not Select_Tag(EPC_len, EPC_ID):
-		print('failed to select tag :{}'.format(EPC_ID))
-
-	Write_info_tag(data)
+	# if not Select_Tag(EPC_len, EPC_ID):
+	# 	print('failed to select tag :{}'.format(EPC_ID))
+	#
+	# Write_info_tag(data)
 
 if __name__ =='__main__':
 	main()
