@@ -81,6 +81,7 @@ def Antenna_Power():
 		print 'Rfu: {}'.format(Rfu)
 
 		if Rfu == 0x00:
+			print 'Success'
 			return True
 
 		print 'Antenna Power failed\n'
