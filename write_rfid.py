@@ -78,10 +78,10 @@ def Antenna_Power():
 		print 'RES_ID: {}\n'.format(RES_ID)
 		print 'RES_len: {}\n'.format(RES_len)
 
-		Rfu = data[2:].encode('hex')
+		Rfu = data[2:]
 		print 'Rfu: {}'.format(Rfu)
 
-		if Rfu == '0x00':
+		if Rfu == 0:
 			print 'Success'
 			return True
 
@@ -109,7 +109,7 @@ def Inventory():
 		print 'RES_len: {}\n'.format(RES_len)
 
 		Found_Tag_Num = data[2].encode('hex')
-		EPC_Len = int(data[3].encode('hex'), 16)
+		EPC_Len = int(data[3].encode('hex'), 16) - 2  # 2 bytes is reserved bytes.
 		EPC = data[4:5].encode('hex')
 		rfu = data[6:].encode('hex')
 		print 'Found_Tag_Num: {}\n'.format(Found_Tag_Num)
@@ -130,22 +130,23 @@ def Select_Tag(EPC_len, EPC_ID):
 	"""
 	try:
 		tag_len = EPC_len + 3
-		command = [0x33, hex(tag_len)] + [ord(x) for x in binascii.unhexlify(EPC_ID)]
+		command = [0x33, tag_len, EPC_len] + [ord(x) for x in binascii.unhexlify(EPC_ID)]
 
 		print 'command: {}\n'.format(command)
 		ser.write(bytearray(command))
 		data = read_ser()
+		print 'data: {}'.format(data.encode('hex'))
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
 
 		print 'RES_ID: {}\n'.format(RES_ID)
 		print 'RES_len: {}\n'.format(RES_len)
 
-		if data[2].encode('hex') == 0x00:
+		if data[2] == 0:
 			print 'Found Tag\n'
 			return True  # Found the tag
 
-		if data[2].encode('hex') == 0x09:
+		if data[2] == 9:
 			print 'No Found Tag.\n'
 			return False  # Not Found
 
@@ -156,13 +157,32 @@ def Select_Tag(EPC_len, EPC_ID):
 		return False
 
 
-def Write_info_tag(data):
+def Write_info_tag(data=None):
 	"""
 	Write the info to tag
 	:param data:
 	:return:
 	"""
-	pass
+	try:
+
+		command = [0x35, 0x15, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x06, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12]
+		print 'command: {}\n'.format(command)
+		ser.write(bytearray(command))
+		data = read_ser()
+		print 'data: {}'.format(data.encode('hex'))
+		RES_ID = data[0].encode('hex')
+		RES_len = int(data[1].encode('hex'), 16)
+		error = data[2].encode('hex')
+		word_len = data[3].encode('hex')
+		print 'RES_ID: {}\n'.format(RES_ID)
+		print 'RES_len: {}\n'.format(RES_len)
+		print 'error: {}\n'.format(error)
+		print 'word_len: {}\n'.format(word_len)
+		return True
+	except Exception as e:
+		print 'Tag Error: {}'.format(e)
+		return False
+
 
 
 def main():
@@ -184,7 +204,7 @@ def main():
 	if not Select_Tag(EPC_len, EPC_ID):
 		print('failed to select tag :{}'.format(EPC_ID))
 	#
-	# Write_info_tag(data)
+	Write_info_tag(data)
 
 if __name__ =='__main__':
 	main()
