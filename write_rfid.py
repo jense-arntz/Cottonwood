@@ -74,11 +74,10 @@ def Antenna_Power():
 		print 'Antenna_Power: {}'.format(data.encode('hex'))
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
-		print 'Antenna Power Data: {}'.format(data)
-		print 'RES_ID: {}\n'.format(RES_ID.encode('hex'))
+		print 'RES_ID: {}\n'.format(RES_ID)
 		print 'RES_len: {}\n'.format(RES_len)
 
-		Rfu = data[2:]
+		Rfu = data[2:].encode('hex')
 		if Rfu == 0x00:
 			print 'Rfu: {}'.format(Rfu.encode('hex'))
 			return True
@@ -102,17 +101,17 @@ def Inventory():
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
 		print 'Inventory Data: {}'.format(data)
-		print 'RES_ID: {}\n'.format(RES_ID.encode('hex'))
+		print 'RES_ID: {}\n'.format(RES_ID)
 		print 'RES_len: {}\n'.format(RES_len)
 
 		Found_Tag_Num = data[2].encode('hex')
 		EPC_Len = int(data[3].encode('hex'), 16)
 		EPC = data[4:5].encode('hex')
 		rfu = data[6:].encode('hex')
-		print 'Found_Tag_Num: {}\n'.format(Found_Tag_Num.encode('hex'))
+		print 'Found_Tag_Num: {}\n'.format(Found_Tag_Num)
 		print 'EPC_len: {}\n'.format(EPC_Len)
-		print 'EPC: {}\n'.format(EPC.encode('hex'))
-		print 'EPC ID: {}\n'.format(rfu.encode('hex'))
+		print 'EPC: {}\n'.format(EPC)
+		print 'EPC ID: {}\n'.format(rfu)
 
 		return EPC_Len, rfu
 	except Exception as e:
@@ -132,7 +131,7 @@ def Select_Tag(EPC_len, EPC_ID):
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
 
-		print 'RES_ID: {}\n'.format(RES_ID.encode('hex'))
+		print 'RES_ID: {}\n'.format(RES_ID)
 		print 'RES_len: {}\n'.format(RES_len)
 
 		if data[2].encode('hex') == 0x00:
