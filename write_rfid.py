@@ -78,10 +78,10 @@ def Antenna_Power():
 		print 'RES_ID: {}\n'.format(RES_ID)
 		print 'RES_len: {}\n'.format(RES_len)
 
-		Rfu = data[2:]
+		Rfu = data[2:].encode('hex')
 		print 'Rfu: {}'.format(Rfu)
 
-		if Rfu == 0:
+		if Rfu == '00':
 			print 'Success'
 			return True
 
@@ -142,11 +142,11 @@ def Select_Tag(EPC_len, EPC_ID):
 		print 'RES_ID: {}\n'.format(RES_ID)
 		print 'RES_len: {}\n'.format(RES_len)
 
-		if data[2] == 0:
+		if data[2].encode('hex') == '00':
 			print 'Found Tag\n'
 			return True  # Found the tag
 
-		if data[2] == 9:
+		if data[2].encode('hex') == '09':
 			print 'No Found Tag.\n'
 			return False  # Not Found
 
