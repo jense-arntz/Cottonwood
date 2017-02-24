@@ -26,9 +26,18 @@ BUFF_SIZE = 1024
 
 while ser is None:
 	try:
-		ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=0)
+		ser = serial.Serial('/dev/ttyUSB0', 9600)
 	except Exception as e:
+		ser = None
 		print 'Serial Creation Error: {}'.format(e)
+
+
+def read_ser():
+	tdata = ser.read()           # Wait forever for anything
+	time.sleep(1)              # Sleep (or inWaiting() doesn't give the correct value)
+	data_left = ser.inWaiting()  # Get the number of characters ready to be read
+	tdata += ser.read(data_left)
+	return tdata
 
 
 def Firmware():
@@ -38,7 +47,7 @@ def Firmware():
 	"""
 	try:
 		ser.write(bytearray(FIRMWARE_ID))
-		data = ser.read(1024)
+		data = read_ser()
 		print 'Firmware Data: {}'.format(data)
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
@@ -61,7 +70,7 @@ def Antenna_Power():
 	"""
 	try:
 		ser.write(bytearray(ANTENNA_POWER_ON))
-		data = ser.read(1024)
+		data = read_ser()
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
 		print 'Antenna Power Data: {}'.format(data)
@@ -84,7 +93,7 @@ def Inventory():
 	"""
 	try:
 		ser.write(bytearray(INVENTORY))
-		data = ser.read(1024)
+		data = read_ser()
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
 		print 'Inventory Data: {}'.format(data)
@@ -114,7 +123,7 @@ def Select_Tag(EPC_len, EPC_ID):
 	try:
 		tag_len = hex(EPC_len + 3)
 		ser.write(bytearray([0x33, tag_len, hex(EPC_len), EPC_ID]))
-		data = ser.read(1024)
+		data = read_ser()
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
 
@@ -170,7 +179,7 @@ def main():
 	if not Antenna_Power():
 		print 'failed to set Antenna Power On'
 
-	EPC_len, EPC_ID = Inventory()
+	# EPC_len, EPC_ID = Inventory()
 
 	# if not Select_Tag(EPC_len, EPC_ID):
 	# 	print('failed to select tag :{}'.format(EPC_ID))
