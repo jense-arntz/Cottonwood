@@ -128,8 +128,8 @@ def Select_Tag(EPC_len, EPC_ID):
 	"""
 	try:
 		tag_len = EPC_len + 3
-		print 'command: {}'.format([0x33, tag_len, EPC_len, EPC_ID.decode('hex')])
-		ser.write(bytearray([0x33, tag_len, hex(EPC_len), EPC_ID.decode('hex')]))
+		print 'command: {}'.format([0x33, tag_len, EPC_len, hex(int(EPC_ID, 16))])
+		ser.write(bytearray([0x33, tag_len, hex(EPC_len), hex(int(EPC_ID, 16))]))
 		data = read_ser()
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
