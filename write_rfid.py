@@ -110,11 +110,11 @@ def Inventory():
 		Found_Tag_Num = data[2].encode('hex')
 		EPC_Len = int(data[3].encode('hex'), 16)
 		EPC = data[4:5].encode('hex')
-		rfu = data[6:].encode('hex')
+		rfu = data[6:]
 		print 'Found_Tag_Num: {}\n'.format(Found_Tag_Num)
 		print 'EPC_len: {}\n'.format(EPC_Len)
 		print 'EPC: {}\n'.format(EPC)
-		print 'EPC ID: {}\n'.format(rfu)
+		# print 'EPC ID: {}\n'.format(rfu)
 
 		return EPC_Len, rfu
 	except Exception as e:
@@ -129,8 +129,8 @@ def Select_Tag(EPC_len, EPC_ID):
 	"""
 	try:
 		tag_len = EPC_len + 3
-		print 'command: {}'.format([0x33, tag_len, EPC_len, hex(int(EPC_ID, 16))])
-		ser.write(bytearray([0x33, tag_len, hex(EPC_len), hex(int(EPC_ID, 16))]))
+		print 'command: {}'.format([0x33, tag_len, EPC_len, EPC_ID])
+		ser.write(bytearray([0x33, tag_len, hex(EPC_len), EPC_ID]))
 		data = read_ser()
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
