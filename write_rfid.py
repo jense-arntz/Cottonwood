@@ -127,7 +127,8 @@ def Select_Tag(EPC_len, EPC_ID):
 	:return:
 	"""
 	try:
-		tag_len = hex(EPC_len + 3)
+		tag_len = EPC_len + 3
+		print 'command: {}'.format([0x33, tag_len, EPC_len, EPC_ID])
 		ser.write(bytearray([0x33, tag_len, hex(EPC_len), EPC_ID]))
 		data = read_ser()
 		RES_ID = data[0].encode('hex')
