@@ -1,4 +1,5 @@
 import serial, time
+import binascii
 
 """
 Command List
@@ -80,7 +81,7 @@ def Antenna_Power():
 		Rfu = data[2:].encode('hex')
 		print 'Rfu: {}'.format(Rfu)
 
-		if Rfu == 0x00:
+		if Rfu == '0x00':
 			print 'Success'
 			return True
 
@@ -110,11 +111,11 @@ def Inventory():
 		Found_Tag_Num = data[2].encode('hex')
 		EPC_Len = int(data[3].encode('hex'), 16)
 		EPC = data[4:5].encode('hex')
-		rfu = data[6:]
+		rfu = data[6:].encode('hex')
 		print 'Found_Tag_Num: {}\n'.format(Found_Tag_Num)
 		print 'EPC_len: {}\n'.format(EPC_Len)
 		print 'EPC: {}\n'.format(EPC)
-		print 'EPC ID: {}\n'.format(rfu.encode('hex'))
+		print 'EPC ID: {}\n'.format(rfu)
 
 		return EPC_Len, rfu
 	except Exception as e:
@@ -129,11 +130,8 @@ def Select_Tag(EPC_len, EPC_ID):
 	"""
 	try:
 		tag_len = EPC_len + 3
-		command = [0x33, hex(tag_len)]
-		i = 0
-		while i < len(EPC_ID):
-			command.append(EPC_ID[i])
-			i += 1
+		command = [0x33, hex(tag_len)] + [ord(x) for x in binascii.unhexlify(EPC_ID)]
+
 		print 'command: {}\n'.format(command)
 		ser.write(bytearray(command))
 		data = read_ser()
