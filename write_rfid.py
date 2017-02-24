@@ -78,10 +78,12 @@ def Antenna_Power():
 		print 'RES_len: {}\n'.format(RES_len)
 
 		Rfu = data[2:].encode('hex')
+		print 'Rfu: {}'.format(Rfu)
+
 		if Rfu == 0x00:
-			print 'Rfu: {}'.format(Rfu.encode('hex'))
 			return True
 
+		print 'Antenna Power failed\n'
 		return False
 
 	except Exception as e:
@@ -158,17 +160,6 @@ def Write_info_tag(data):
 	pass
 
 
-def read_from_ftdi():
-	while True:
-		line = ser.read(ser.inWaiting())
-		if len(line) > 0:
-			print 'line: {}'.format(line.decode("utf-8"))
-			if "8003" in line:
-				print 'There it is'
-				break
-		time.sleep(.2)
-
-
 def main():
 	"""
 	Main Function
@@ -183,10 +174,10 @@ def main():
 	if not Antenna_Power():
 		print 'failed to set Antenna Power On'
 
-	# EPC_len, EPC_ID = Inventory()
+	EPC_len, EPC_ID = Inventory()
 
-	# if not Select_Tag(EPC_len, EPC_ID):
-	# 	print('failed to select tag :{}'.format(EPC_ID))
+	if not Select_Tag(EPC_len, EPC_ID):
+		print('failed to select tag :{}'.format(EPC_ID))
 	#
 	# Write_info_tag(data)
 
