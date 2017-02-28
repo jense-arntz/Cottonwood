@@ -1,8 +1,12 @@
 import sys
 import re
 import logging
+import sysv_ipc
 
 logging.basicConfig(filename='/var/log/barcode_scan.log', level=logging.INFO)
+
+Cotton_KEY = 1234
+mq = None
 
 hid = {4: 'a', 5: 'b', 6: 'c', 7: 'd', 8: 'e', 9: 'f', 10: 'g',
        11: 'h', 12: 'i', 13: 'j', 14: 'k', 15: 'l', 16: 'm', 17: 'n',
@@ -21,6 +25,18 @@ hid2 = {4: 'A', 5: 'B', 6: 'C', 7: 'D', 8: 'E', 9: 'F', 10: 'G',
         51: ':', 52: '"', 53: '~', 54: '<', 55: '>', 56: '?'}
 
 fp = open('/dev/hidraw0', 'rb')
+
+
+"""
+Creating Message Queue
+"""
+while mq is None:
+	try:
+		mq = sysv_ipc.MessageQueue(Cotton_KEY, sysv_ipc.IPC_CREAT)
+		logging.info("Created mq")
+	except Exception as e:
+		logging.info("no Created mq: {}".format(e))
+		pass
 
 
 def read_data_from_barcode():
@@ -79,8 +95,6 @@ def decode(qr_data):
 if __name__ == '__main__':
 	while True:
 		data = read_data_from_barcode()
-		print "data: {}\n".format(data)
-		print "======================="
-		logging.info("data: {}\n".format(data))
-		logging.info("=======================")
-		decode(data)
+		user_info = decode(data)
+		if user_info['bagde'] is not None:
+			mq.send(user_info['bagde'])

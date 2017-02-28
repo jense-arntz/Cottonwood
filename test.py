@@ -1,23 +1,32 @@
-import serial, time
+import sysv_ipc
 
-FIRMWARE_ID = [0x10, 0x03, 0x00]
-HARDWARE_ID = [0x10, 0x03, 0x01]
+mq = None
+Cotton_KEY = 1234
 
-# Antenna Power
-ANTENNA_POWER_OFF = [0x18, 0x03, 0x00]
-ANTENNA_POWER_ON = [0x18, 0x03, 0xFF]
+"""
+Creating Message Queue
+"""
+while mq is None:
+	try:
+		mq = sysv_ipc.MessageQueue(Cotton_KEY)
+		print("Founded mq")
+	except Exception as e:
+		print("no Founded mq: {}".format(e))
+		pass
 
-# Command Inventory
-INVENTORY = [0x31, 0x03, 0x01]
 
+def read_barcode():
+	"""
+	Read data from barcode daemon.
+	:return:
+	"""
+	print('start receive message....')
+	(message, priority) = mq.receive()
+	msg = message.decode("utf-8")
+	msg = msg.replace('\x00', '')
+	print('Received Data: {}'.format(msg))
+	return msg
 
-BUFF_SIZE = 1024
-
-ser = serial.Serial('/dev/ttyUSB0', 9600)
-
-ser.write(bytearray([0x10, 0x03, 0x00]))
-
-while True:
-	data = ser.read(9999)
-	if len(data) > 0:
-		print 'data: {}'.format(data)
+if __name__ == '__main__':
+	while True:
+		read_barcode()
