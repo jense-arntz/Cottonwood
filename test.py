@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import sysv_ipc
 
 mq = None

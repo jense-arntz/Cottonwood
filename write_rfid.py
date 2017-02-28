@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import sysv_ipc, logging, serial, time
 import binascii
 
