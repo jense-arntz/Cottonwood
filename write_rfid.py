@@ -214,7 +214,7 @@ def Write_info_tag(data=None):
 	logging.info('Write information tag\n')
 	try:
 
-		command = [0x35, 0x15, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x09, 0x10, 0x11, 0x12]
+		command = [0x35, 0x15, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x06] + convert_int(data)
 		print 'command: {}\n'.format(command)
 		logging.info('command: {}\n'.format(command))
 
@@ -238,6 +238,22 @@ def Write_info_tag(data=None):
 		print 'Tag Error: {}\n'.format(e)
 		logging.info('Tag Error: {}\n'.format(e))
 		return False
+
+
+def convert_int(data):
+	"""
+	Convert String to Int
+	:param data:
+	:return:
+	"""
+	array = []
+	for i in data:
+		array.append(int(i))
+
+	while len(array) <= 12:
+		array.insert(0, 0)
+
+	return array
 
 
 def read_barcode():
