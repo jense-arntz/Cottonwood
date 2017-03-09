@@ -42,19 +42,6 @@ while ser is None:
 		logging.info('Serial Creation Error: {}\n'.format(e))
 
 
-
-"""
-Creating Message Queue
-"""
-while mq is None:
-	try:
-		mq = sysv_ipc.MessageQueue(Cotton_KEY)
-		logging.info("Founded mq")
-	except Exception as e:
-		logging.info("no Founded mq: {}".format(e))
-		pass
-
-
 def read_ser():
 	"""
 	Read serial data from cottonwood.
@@ -144,10 +131,10 @@ def Inventory():
 		EPC_Len = int(data[3].encode('hex'), 16) - 2  # 2 bytes is reserved bytes.
 		EPC = data[4:5].encode('hex')
 		rfu = data[6:].encode('hex')
-		print 'Found_Tag_Num: {}\n'.format(Found_Tag_Num)
-		logging.info('Found_Tag_Num: {}\n'.format(Found_Tag_Num))
-		print 'EPC_len: {}\n'.format(EPC_Len)
-		logging.info('EPC_len: {}\n'.format(EPC_Len))
+		print 'Found_Tag_Num: {}'.format(Found_Tag_Num)
+		logging.info('Found_Tag_Num: {}'.format(Found_Tag_Num))
+		# print 'EPC_len: {}'.format(EPC_Len)
+		# logging.info('EPC_len: {}'.format(EPC_Len))
 		print 'EPC: {}\n'.format(EPC)
 		logging.info('EPC: {}\n'.format(EPC))
 		print 'EPC ID: {}\n'.format(rfu)
@@ -160,22 +147,6 @@ def Inventory():
 		return False
 
 
-def convert_int(data):
-	"""
-	Convert String to Int
-	:param data:
-	:return:
-	"""
-	array = []
-	for i in data:
-		array.append(int(i))
-
-	while len(array) < 12:
-		array.insert(0, 0)
-
-	return array
-
-
 def main():
 	"""
 	Main Function
@@ -184,21 +155,8 @@ def main():
 
 	while True:
 		try:
-			Found_EPC = None
-			count = 0
-			flag = True
-
-			while Found_EPC is None:
-				if count > 50:
-					flag = False
-					break
-				Found_EPC = Inventory()
-				time.sleep(1)
-				count += 1
-
-			if flag is False:  # if not founded card around cottonwood
-				continue
-
+			Found_EPC = Inventory()
+			print 'Founded: {}'.format(Found_EPC)
 		except Exception as e:
 			logging.info('main error: {}'.format(e))
 			continue
