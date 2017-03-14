@@ -146,6 +146,10 @@ def Inventory():
 		rfu = data[6:].encode('hex')
 		print 'Found_Tag_Num: {}\n'.format(Found_Tag_Num)
 		logging.info('Found_Tag_Num: {}\n'.format(Found_Tag_Num))
+
+		if Found_Tag_Num == '00':
+			return None
+
 		print 'EPC_len: {}\n'.format(EPC_Len)
 		logging.info('EPC_len: {}\n'.format(EPC_Len))
 		print 'EPC: {}\n'.format(EPC)
@@ -157,7 +161,7 @@ def Inventory():
 	except Exception as e:
 		print 'Inventory Error: {}\n'.format(e)
 		logging.info('Inventory Error: {}\n'.format(e))
-		return False
+		return None
 
 
 def Select_Tag(EPC_len, EPC_ID):
@@ -166,8 +170,8 @@ def Select_Tag(EPC_len, EPC_ID):
 	:return:
 	"""
 	try:
-		print 'Select Tag\n'
-		logging.info('Select Tag\n')
+		print 'Select Tag: {}, {}\n'.format(EPC_len, EPC_ID)
+		logging.info('Select Tag\n'.format(EPC_len, EPC_ID))
 
 		tag_len = EPC_len + 3
 		command = [0x33, tag_len, EPC_len] + [ord(x) for x in binascii.unhexlify(EPC_ID)]
@@ -250,7 +254,7 @@ def convert_int(data):
 	for i in data:
 		array.append(int(i))
 
-	while len(array) <= 12:
+	while len(array) < 12:
 		array.insert(0, 0)
 
 	return array
@@ -284,7 +288,7 @@ def main():
 			data = read_barcode()
 
 			while Found_EPC is None:
-				if count > 10:
+				if count > 50:
 					flag = False
 					break
 				Found_EPC = Inventory()
