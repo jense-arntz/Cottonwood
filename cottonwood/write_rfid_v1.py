@@ -81,12 +81,13 @@ def main():
 		try:
 			data = read_barcode()
 			send_ser(epc_tag_write_multi(data))
+			send_ser(epc_tag_read())
 		except Exception as e:
 			logging.info('main error: {}'.format(e))
 			continue
 
 
 if __name__ =='__main__':
-	# main()
-	send_ser(epc_tag_identy())
+	main()
+	# send_ser(epc_tag_identy())
 
