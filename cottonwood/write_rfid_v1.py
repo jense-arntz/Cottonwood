@@ -41,17 +41,11 @@ def read_ser():
 	Read serial data from cottonwood.
 	:return:
 	"""
-	size = ser.inWaiting()
-	if size:
-		x = ser.read(size)
-		time.sleep(1)
-		x = binascii.hexlify(x)
-		q = x.decode("ascii")  #converting scanned data
-		print('rfidvalue: {}'.format(q[4:27])) #converting scanned data
-		rfidvalue = q[4:27]
-		return rfidvalue
-	else:
-		print 'scanning...'
+	tdata = ser.read()           # Wait forever for anything
+	time.sleep(1)              # Sleep (or inWaiting() doesn't give the correct value)
+	data_left = ser.inWaiting()  # Get the number of characters ready to be read
+	tdata += ser.read(data_left)
+	return tdata
 
 
 def send_ser(command=None):
