@@ -255,7 +255,7 @@ def convert_int(data):
 		array.append(int(i))
 
 	while len(array) < 12:
-		array.insert(0, 0)
+		array.insert(0, 14)
 
 	return array
 

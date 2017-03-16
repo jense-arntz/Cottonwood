@@ -11,7 +11,7 @@
 ### END INIT INFO
 
 # Change the next 3 lines to suit where you install your script and what you want to call it
-DIR=/home/pi/Cottonwood
+DIR=/home/pi/Cottonwood/barcode
 DAEMON=$DIR/barcode_scan.py
 DAEMON_NAME=barcode_scan
 
