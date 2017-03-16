@@ -15,11 +15,9 @@ BUFF_SIZE = 1024
 while ser is None:
 	try:
 		try:
-			ser = serial.Serial(port='/dev/ttyUSB0', baudrate=9600, timeout=.0001)
-		except Exception as e:
-			ser = serial.Serial(port='/dev/ttyUSB1', baudrate=9600, timeout=.0001)
-		print 'Serial Connected Successfully\n'
-		logging.info('Serial Connected Successfully\n')
+			ser = serial.Serial(port='/dev/tty0', baudrate=9600, timeout=.0001)
+			print 'Serial Connected Successfully\n'
+			logging.info('Serial Connected Successfully\n')
 	except Exception as e:
 		ser = None
 		print 'Serial Creation Error: {}'.format(e)
@@ -39,11 +37,17 @@ def read_ser():
 	Read serial data from cottonwood.
 	:return:
 	"""
-	tdata = ser.read()           # Wait forever for anything
-	time.sleep(1)              # Sleep (or inWaiting() doesn't give the correct value)
-	data_left = ser.inWaiting()  # Get the number of characters ready to be read
-	tdata += ser.read(data_left)
-	return tdata
+	size = ser.inWaiting()
+	if size:
+		x = ser.read(size)
+		time.sleep(1)
+		x = binascii.hexlify(x)
+		q = x.decode("ascii")  #converting scanned data
+		print('rfidvalue: {}'.format(q[4:27])) #converting scanned data
+		rfidvalue = q[4:27]
+		return rfidvalue
+	else:
+		print 'scanning...'
 
 
 def send_ser(command=None):
