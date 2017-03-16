@@ -15,7 +15,7 @@ BUFF_SIZE = 1024
 while ser is None:
 	try:
 		try:
-			ser = serial.Serial(port='/dev/tty0', baudrate=9600, timeout=.0001)
+			ser = serial.Serial(port='/dev/ttyUSB0', baudrate=9600, timeout=.0001)
 			print 'Serial Connected Successfully\n'
 			logging.info('Serial Connected Successfully\n')
 	except Exception as e:
