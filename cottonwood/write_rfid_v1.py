@@ -18,6 +18,10 @@ while ser is None:
 			ser = serial.Serial(port='/dev/ttyUSB0', baudrate=9600, timeout=.0001)
 			print 'Serial Connected Successfully\n'
 			logging.info('Serial Connected Successfully\n')
+		except Exception as e:
+			ser = serial.Serial(port='/dev/ttyUSB1', baudrate=9600, timeout=.0001)
+			print 'Serial Connected Successfully\n'
+			logging.info('Serial Connected Successfully\n')
 	except Exception as e:
 		ser = None
 		print 'Serial Creation Error: {}'.format(e)
