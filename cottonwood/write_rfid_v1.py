@@ -56,7 +56,6 @@ def send_ser(command=None):
 		print 'epc tag identification: {}'.format(e)
 
 
-
 def read_barcode():
 	"""
 	Read data from barcode daemon.
@@ -78,24 +77,14 @@ def main():
 
 	while True:
 		try:
-			Found_EPC = None
-			count = 0
-			flag = True
-
 			data = read_barcode()
-
-			while Found_EPC is None:
-				if count > 50:
-					flag = False
-					break
+			send_ser(epc_tag_write_multi(data))
 		except Exception as e:
 			logging.info('main error: {}'.format(e))
 			continue
 
-	epc_tag_identification()
-
 
 if __name__ =='__main__':
-	main()
-
+	# main()
+	send_ser(epc_tag_identy())
 
