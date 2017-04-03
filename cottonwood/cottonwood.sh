@@ -12,7 +12,7 @@
 
 # Change the next 3 lines to suit where you install your script and what you want to call it
 DIR=/home/pi/Cottonwood/cottonwood
-DAEMON=$DIR/write_rfid.py
+DAEMON=$DIR/write_rfid_reader.py
 DAEMON_NAME=cottonwood
 
 # Add any command line options for your check_update_client here
