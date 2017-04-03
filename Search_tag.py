@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sysv_ipc, logging, serial, time
+import logging, serial, time
 import binascii
 
 Cotton_KEY = 1234

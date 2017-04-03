@@ -68,4 +68,5 @@ def epc_tag_read():
 def epc_tag_write_multi(badge):
 	data = [0x00, 0x01, 0x01, 0x02, 0x06]
 	data += convert_int(badge)
+	print 'data: {}'.format(data)
 	return protocol_packet(SEND_TYPE, 0x81, DATA=data)

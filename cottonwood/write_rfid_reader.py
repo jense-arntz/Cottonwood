@@ -89,5 +89,5 @@ def main():
 
 if __name__ =='__main__':
 	main()
-	# send_ser(epc_tag_identy())
+
 
