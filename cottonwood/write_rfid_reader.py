@@ -48,9 +48,11 @@ def read_ser():
 	return tdata
 
 
-def send_ser(command=None):
+def send_ser(command=None, event=False):
 	try:
 		ser.write(bytearray(command))
+		if event:
+			blink()
 		data = read_ser()
 		print 'Received Data: {}'.format(data.encode('hex'))
 
@@ -80,11 +82,11 @@ def main():
 	while True:
 		try:
 			data = read_barcode()
-			send_ser(epc_tag_write_multi(data))
-			blink()
+			send_ser(epc_tag_write_multi(data), event=True)
 			send_ser(epc_tag_read())
 		except Exception as e:
 			logging.info('main error: {}'.format(e))
+			error()
 			continue
 
 
