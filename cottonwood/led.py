@@ -12,6 +12,7 @@ def blink():
 		show()
 		sleep(1)
 		clear()
+		show()
 
 
 def error():
