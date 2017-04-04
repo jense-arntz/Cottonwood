@@ -4,7 +4,7 @@ import sysv_ipc, logging, serial, time
 import binascii
 import logging, time
 from protocol import *
-
+from led import *
 logging.basicConfig(filename='/var/log/rfid_card.log', level=logging.INFO)
 
 Cotton_KEY = 1234
@@ -81,6 +81,7 @@ def main():
 		try:
 			data = read_barcode()
 			send_ser(epc_tag_write_multi(data))
+			blink()
 			send_ser(epc_tag_read())
 		except Exception as e:
 			logging.info('main error: {}'.format(e))
