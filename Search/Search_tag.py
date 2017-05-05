@@ -2,6 +2,7 @@
 
 import logging, serial, time
 import binascii
+import threading
 
 Cotton_KEY = 1234
 mq = None
@@ -21,8 +22,8 @@ ANTENNA_POWER_OFF = [0x18, 0x03, 0x00]
 ANTENNA_POWER_ON = [0x18, 0x03, 0xFF]
 
 # Command Inventory
-INVENTORY = [0x31, 0x03, 0x01]
-
+START_INVENTORY = [0x31, 0x03, 0x01]
+NEXT_INVENTORY = [0x31, 0x03, 0x02]
 # Write to Tag
 
 """
@@ -30,7 +31,7 @@ Values
 """
 ser = None
 BUFF_SIZE = 1024
-
+BUF_LEN = 12
 
 while ser is None:
 	try:
@@ -59,21 +60,19 @@ def Firmware():
 	Return Firmware ID
 	:return:
 	"""
+	print 'Reading Firmware ID\n'
 	try:
 		ser.write(bytearray(FIRMWARE_ID))
 		data = read_ser()
-		print 'Firmware Data: {}'.format(data.encode('hex'))
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
-
-		print 'RES_ID: {}\n'.format(RES_ID)
-		print 'RES_len: {}\n'.format(RES_len)
 		firmware_version = data[2:]
-		print 'firmware version: {}'.format(firmware_version.encode('hex'))
+		print 'firmware version: {}\n'.format(firmware_version.encode('hex'))
+		logging.info('firmware version: {}\n'.format(firmware_version.encode('hex')))
 		return True
 
 	except Exception as e:
-		print 'Firmware Error: {}'.format(e)
+		print 'Firmware Error: {}\n'.format(e)
 		return False
 
 
@@ -83,16 +82,14 @@ def Antenna_Power():
 	:return:
 	"""
 	logging.info('Antenna Power\n')
+	print 'Setting Antenna Power\n'
 	try:
 		ser.write(bytearray(ANTENNA_POWER_ON))
 		data = read_ser()
-		print 'Received Data: {}'.format(data.encode('hex'))
-		logging.info('Antenna_Power: {}'.format(data.encode('hex')))
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
-
 		Rfu = data[2:].encode('hex')
-		print 'Rfu: {}'.format(Rfu)
+		print 'Rfu: {}\n'.format(Rfu)
 		logging.info('Rfu: {}'.format(Rfu))
 
 		if Rfu == '00':
@@ -110,41 +107,69 @@ def Antenna_Power():
 		return False
 
 
-def Inventory():
+def Start_Inventory():
 	"""
 	Inventory
 	:return:
 	"""
 	logging.info('Inventory')
 	try:
-		ser.write(bytearray(INVENTORY))
+		ser.write(bytearray(START_INVENTORY))
 		data = read_ser()
-		print 'Inventory: {}'.format(data.encode('hex'))
 		logging.info('Inventory: {}'.format(data.encode('hex')))
-
 		RES_ID = data[0].encode('hex')
 		RES_len = int(data[1].encode('hex'), 16)
-		print 'Inventory Data: {}'.format(data)
-		logging.info('Inventory Data: {}'.format(data))
-
-		Found_Tag_Num = data[2].encode('hex')
+		Found_Tag_Num = int(data[2].encode('hex'), 16)
 		EPC_Len = int(data[3].encode('hex'), 16) - 2  # 2 bytes is reserved bytes.
 		EPC = data[4:5].encode('hex')
 		rfu = data[6:].encode('hex')
-		print 'Found_Tag_Num: {}'.format(Found_Tag_Num)
-		logging.info('Found_Tag_Num: {}'.format(Found_Tag_Num))
-		# print 'EPC_len: {}'.format(EPC_Len)
-		# logging.info('EPC_len: {}'.format(EPC_Len))
-		print 'EPC: {}\n'.format(EPC)
-		logging.info('EPC: {}\n'.format(EPC))
-		print 'EPC ID: {}\n'.format(rfu)
-		logging.info('EPC ID: {}\n'.format(rfu))
 
-		return (EPC_Len, rfu)
+		# print 'Inventory: {}'.format(data.encode('hex'))
+		print 'Found_Tag_Num: {}'.format(Found_Tag_Num)
+		print 'EPC: {}\n'.format(EPC)
+		print 'EPC ID: {}\n'.format(rfu)
+
+		return (Found_Tag_Num, rfu)
 	except Exception as e:
 		print 'Inventory Error: {}\n'.format(e)
 		logging.info('Inventory Error: {}\n'.format(e))
 		return False
+
+
+def Next_Inventory():
+	"""
+	Inventory
+	:return:
+	"""
+	logging.info('Inventory')
+	try:
+		ser.write(bytearray(NEXT_INVENTORY))
+		data = read_ser()
+		RES_ID = data[0].encode('hex')
+		RES_len = int(data[1].encode('hex'), 16)
+		Found_Tag_Num = data[2].encode('hex')
+		EPC_Len = int(data[3].encode('hex'), 16) - 2  # 2 bytes is reserved bytes.
+		EPC = data[4:5].encode('hex')
+		rfu = data[6:].encode('hex')
+
+		print 'Inventory: {}'.format(data.encode('hex'))
+		print 'Found_Tag_Num: {}'.format(Found_Tag_Num)
+		print 'EPC: {}\n'.format(EPC)
+		print 'EPC ID: {}\n'.format(rfu)
+
+		return (Found_Tag_Num, rfu)
+	except Exception as e:
+		print 'Inventory Error: {}\n'.format(e)
+		logging.info('Inventory Error: {}\n'.format(e))
+		return False
+
+
+def split_data(num, data):
+	Founded = []
+	for i in range(num):
+		Founded.append(data[i*BUF_LEN: 12])
+
+	return Founded
 
 
 def main():
@@ -155,8 +180,12 @@ def main():
 
 	while True:
 		try:
-			Found_EPC = Inventory()
-			print 'Founded: {}'.format(Found_EPC)
+			Found_EPC = Start_Inventory()
+
+			if Found_EPC:
+				Founded = split_data(Found_EPC[0], Found_EPC[1])
+				logging.info('FOUNDED: {}'.format(Founded))
+				print 'Founded: {}'.format(Founded)
 		except Exception as e:
 			logging.info('main error: {}'.format(e))
 			continue
